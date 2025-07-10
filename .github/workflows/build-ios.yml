@@ -1,0 +1,56 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'mobile/**'
+  workflow_dispatch:
+    inputs:
+      build_profile:
+        description: 'Build profile'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+        - preview
+        - production
+
+jobs:
+  build:
+    name: Build iOS App
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "Set the EXPO_TOKEN secret"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        working-directory: ./mobile
+        run: npm ci
+
+      - name: Build iOS app
+        working-directory: ./mobile
+        run: |
+          eas build --platform ios --profile ${{ github.event.inputs.build_profile || 'preview' }} --non-interactive

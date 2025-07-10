@@ -1,0 +1,63 @@
+name: Build iOS Native App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Setup React Native CLI
+      run: npm install -g @react-native-community/cli
+        
+    - name: Install mobile dependencies
+      working-directory: mobile
+      run: npm install
+      
+    - name: Initialize React Native iOS project
+      working-directory: mobile
+      run: |
+        if [ ! -d "ios" ]; then
+          npx react-native init StaffPortal --template react-native-template-typescript
+          cp -r StaffPortal/ios ./
+          rm -rf StaffPortal
+        fi
+        
+    - name: Install CocoaPods
+      working-directory: mobile/ios
+      run: |
+        sudo gem install cocoapods
+        pod install --repo-update
+        
+    - name: Build iOS
+      working-directory: mobile
+      run: npx react-native build-ios --mode Release
+        
+    - name: Archive and Export
+      working-directory: mobile/ios
+      run: |
+        xcodebuild -workspace StaffPortal.xcworkspace \
+                   -scheme StaffPortal \
+                   -configuration Release \
+                   -archivePath build/StaffPortal.xcarchive \
+                   archive
+                   
+        xcodebuild -exportArchive \
+                   -archivePath build/StaffPortal.xcarchive \
+                   -exportPath build/ \
+                   -exportOptionsPlist ../ExportOptions.plist
+                   
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: StaffPortal-iOS
+        path: mobile/ios/build/StaffPortal.ipa

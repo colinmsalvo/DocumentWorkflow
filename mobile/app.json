@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "StaffPortal",
+    "slug": "staffportal-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#dc2626"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.staffportal.mobile",
+      "buildNumber": "1"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#dc2626"
+      },
+      "package": "com.staffportal.mobile",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow StaffPortal to access camera for QR code scanning."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow StaffPortal to access camera for photos."
+        }
+      ],
+      [
+        "expo-secure-store"
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "686cbbda-b53e-438f-a317-97fea1f06372"
+      }
+    }
+  }
+}
